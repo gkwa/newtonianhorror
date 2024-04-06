@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-cat >{{ container }}.yml <<'EOF'
+cat >{{ .Container }}.yml <<'EOF'
 #cloud-config
 package_update: true
 package_reboot_if_required: true
@@ -69,19 +69,19 @@ runcmd:
 #- /root/install_nix.sh
 EOF
 
-incus ls --format=json | jq 'map(select(.name == "{{ container }}")) | .[] | .name' | xargs --no-run-if-empty -I {} incus delete --force {}
-incus launch images:ubuntu/22.04/cloud {{ container }} --config=user.user-data="$(cat {{ container }}.yml)"
-incus exec {{ container }} -- cloud-init status --wait
-incus exec {{ container }} -- shutdown now
+incus ls --format=json | jq 'map(select(.name == "{{ .Container }}")) | .[] | .name' | xargs --no-run-if-empty -I {} incus delete --force {}
+incus launch images:ubuntu/22.04/cloud {{ .Container }} --config=user.user-data="$(cat {{ .Container }}.yml)"
+incus exec {{ .Container }} -- cloud-init status --wait
+incus exec {{ .Container }} -- shutdown now
 
 # create nix image
-timeout 30s bash -c 'until incus publish {{ container }} --alias nix-jammy; do sleep 1s; done'
+timeout 30s bash -c 'until incus publish {{ .Container }} --alias nix-jammy; do sleep 1s; done'
 
-incus ls --format=json | jq 'map(select(.name == "{{ container }}")) | .[] | .name' | xargs --no-run-if-empty -I {} incus delete --force {}
+incus ls --format=json | jq 'map(select(.name == "{{ .Container }}")) | .[] | .name' | xargs --no-run-if-empty -I {} incus delete --force {}
 
 # ensure nix-jammy image exists now:
 incus image list --format=json | jq -e 'map(select(.aliases[].name == "nix-jammy")) | length > 0' >/dev/null
 
 # launch new image from image we just created
-incus launch nix-jammy {{ container }}
-incus exec {{ container }} -- bash -c 'time nix --extra-experimental-features "nix-command flakes" search nixpkgs firefox'
+incus launch nix-jammy {{ .Container }}
+incus exec {{ .Container }} -- bash -c 'time nix --extra-experimental-features "nix-command flakes" search nixpkgs firefox'
