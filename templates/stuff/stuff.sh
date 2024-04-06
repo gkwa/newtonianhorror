@@ -66,7 +66,6 @@ write_files:
 runcmd:
 - /root/install_task.sh
 - /root/install_ringgem.sh
-#- /root/install_nix.sh
 EOF
 
 incus ls --format=json | jq 'map(select(.name == "{{ .Container }}")) | .[] | .name' | xargs --no-run-if-empty -I {} incus delete --force {}
