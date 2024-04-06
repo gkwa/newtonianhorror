@@ -1,0 +1,4 @@
+variables:
+- name: Container
+  description: The name of the container
+  type: string
