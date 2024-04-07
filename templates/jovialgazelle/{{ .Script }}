@@ -49,3 +49,9 @@ incus ls --format=json | jq 'map(select(.name == "{{ .Container }}")) | .[] | .n
 incus launch images:ubuntu/22.04/cloud {{ .Container }} --config=user.user-data="$(cat {{ .CloudInitYaml }})"
 incus exec {{ .Container }} -- cloud-init status --wait
 incus ls {{ .Container }}
+incus stop --timeout=120 {{ .Container }}
+
+incus config set {{ .Container }} boot.autostart false
+incus --quiet snapshot create {{ .Container }} {{ .Container }}
+incus --quiet publish --reuse {{ .Container }} --alias {{ .Container }}
+incus --quiet image export {{ .Container }} {{ .Container }}
