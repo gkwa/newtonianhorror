@@ -17,27 +17,6 @@ write_files:
     set -e
     set -u
 
-    cd /tmp
-
-    curl -Lo ringgem.zip https://github.com/taylormonacelli/ringgem/archive/refs/heads/master.zip
-    unzip ringgem.zip
-
-    # FIXME:
-    export HOME=/root
-
-    ls /tmp/ringgem-master >/dev/null
-
-  path: /root/install_nix.sh
-  append: true
-  permissions: "0755"
-
-
-- content: |
-    #!/usr/bin/env bash
-
-    set -e
-    set -u
-
     curl -Lo ringgem.zip https://github.com/taylormonacelli/ringgem/archive/refs/heads/master.zip
     unzip ringgem.zip
 
