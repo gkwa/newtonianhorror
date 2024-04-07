@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-cat >{{ .Container }}.yml <<'EOF'
+cat >{{ .CloudInitYaml }} <<'EOF'
 #cloud-config
 package_update: true
 package_reboot_if_required: true
@@ -46,6 +46,6 @@ runcmd:
 EOF
 
 incus ls --format=json | jq 'map(select(.name == "{{ .Container }}")) | .[] | .name' | xargs --no-run-if-empty -I {} incus delete --force {}
-incus launch images:ubuntu/22.04/cloud {{ .Container }} --config=user.user-data="$(cat {{ .Container }}.yml)"
+incus launch images:ubuntu/22.04/cloud {{ .Container }} --config=user.user-data="$(cat {{ .CloudInitYaml }})"
 incus exec {{ .Container }} -- cloud-init status --wait
 incus ls {{ .Container }}

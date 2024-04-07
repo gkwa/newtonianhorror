@@ -2,3 +2,19 @@ variables:
 - name: Container
   description: The name of the container
   type: string
+- name: Script
+  description: The name of the script
+  type: string
+  default: "{{ .Container }}"
+- name: CloudInitYaml
+  description: The name of the cloud-init config
+  type: string
+  default: "{{ .Container }}-cloud-init.yml"
+
+hooks:
+  after:
+    - command: chmod
+      args:
+      - +x
+      - "{{ .Script }}"
+      dir: "{{ outputFolder }}"
